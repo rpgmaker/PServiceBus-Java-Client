@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<workspace>
+	<settings>
+		<label>PServiceBus.Java</label>
+		<id>3467</id>
+		<version>0</version>
+	</settings>
+	<users>
+		<user>
+			<path>PServiceBus.Java.jcu</path>
+		</user>
+	</users>
+	<projects>
+		<project>
+			<path>PServiceBus.Java.jcp</path>
+		</project>
+	</projects>
+</workspace>
