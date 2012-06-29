@@ -19,7 +19,7 @@
 			<applet_ref/>
 			<debugger_ref/>
 			<param/>
-			<run/>
+			<run>TestESB</run>
 			<verify>true</verify>
 		</runtime>
 	</runtimes>
@@ -100,10 +100,6 @@
 			</fileitem>
 			<fileitem>
 				<path>pservicebus\Topic.java</path>
-				<folder>pservicebus</folder>
-			</fileitem>
-			<fileitem>
-				<path>pservicebus\Topics.java</path>
 				<folder>pservicebus</folder>
 			</fileitem>
 			<fileitem>

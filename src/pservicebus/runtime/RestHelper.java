@@ -14,7 +14,7 @@ import pservicebus.extensions.*;
 public class RestHelper {
 	public final static JSONSerializer _serializer =
 		new JSONSerializer()
-			.transform(new TransportFormatTranformer(), TransportFormat.class)
+			.transform(new TransportFormatTransformer(), TransportFormat.class)
 			.transform(new MSSQLCommandTypeTransformer(), pservicebus.runtime.mssql.MSSQLCommandType.class);
 
 	public static <T> T fromJson(String json){

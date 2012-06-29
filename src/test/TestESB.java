@@ -16,12 +16,12 @@ public class TestESB {
 	public static void configurationESBConnection(){
 		//Configurate if not running locally
 		ESB.authenticate("username", "password");//This is only need if you have setup authentication on the ESB server
-		ESB.configWithAddress("http://localhost:8087/ESBRestService");
+		ESB.connect("http://localhost:8087/ESBRestService");
 	}
 
 	public static void getNumberOfTopicAvailable() throws ESBException, TopicNotRegisteredException, IOException {
 		//Get all topic available in the ESB
-		List<Topic> topics = ESB.getTopics().getAll();
+		List<Topic> topics = ESB.getTopics();
 		System.out.println(topics.size());
 	}
 
@@ -127,7 +127,9 @@ public class TestESB {
 
 		System.out.println("Waiting for messages....");
 
-		while( !in.nextLine().equals("exit") );
+		while( !(text = in.nextLine()).equals("exit") ){
+			Topic.publishMessage(new ChatTopic(userName, text));
+		}
 
 		TransportHandlers.shutdown();
 
@@ -138,16 +140,6 @@ public class TestESB {
 
 	public static void main(String[] args) throws IOException, ESBException, SubscriberNotExistException, TopicNotRegisteredException, IllegalAccessException, InvocationTargetException {
 		//testTcpMessageHandler();
-		//testRabbitMQMessageHandler();
-		//String xml = "<List><Items type=\"Items\"><ChatTopic><UserName>Olamide</UserName><Message>Message</Message><Strings><Items type=\"Items\"><String>String1</String><String>String2</String></Items></Strings><Data><Texts><Items type=\"Items\"><TDataInfo><Text>Test2</Text></TDataInfo></Items></Texts></Data></ChatTopic></Items></List>";
-		//String chatXml = "<ChatTopic><UserName>Olamide</UserName><Message>This is my message :)</Message></ChatTopic>";
-		//ChatTopic chatTopic = XmlSerializer.<ChatTopic>deserialize(chatXml, ChatTopic.class);
-		//System.out.println(chatTopic.Message);
-		//ChatTopic[] list = XmlSerializer.<ChatTopic[]>deserialize(xml, ChatTopic[].class);
-		//List<ChatTopic> list2 = XmlSerializer.<List<ChatTopic>>deserialize(xml, ArrayList.class, ChatTopic.class);
-		//System.out.println(list[0].Strings.get(1));
-		//System.out.println(list[0].Data.Texts.get(0).Text);
-		//System.out.println(list2.get(0).Strings.get(1));
-		//System.out.println(list2.get(0).Data.Texts.get(0).Text);
+		testRabbitMQMessageHandler();
 	}
 }

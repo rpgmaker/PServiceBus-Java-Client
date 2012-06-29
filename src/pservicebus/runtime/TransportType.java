@@ -5,15 +5,14 @@ import java.util.*;
 public enum TransportType {
    MSMQ (0),
    RabbitMQ (1),
-   RavenDB (2),
-   Tcp (3),
-   WebService (4),
-   Email (5),
-   Ftp (6),
-   Redis (7),
-   Http (8),
-   BasicHttp (9),
-   MSSQL (10);
+   Tcp (2),
+   WebService (3),
+   Email (4),
+   Ftp (5),
+   Redis (6),
+   Http (7),
+   BasicHttp (8),
+   MSSQL (9);
 
    private static final Map<Integer, TransportType> lookup
 		= new HashMap<Integer, TransportType>();

@@ -69,7 +69,7 @@
 			<path>test\TestESB.java</path>
 			<source>true</source>
 			<index>1</index>
-			<active>false</active>
+			<active>true</active>
 		</docitem>
 		<docitem>
 			<path>pservicebus\runtime\transformations\TextTransformation.java</path>
@@ -81,7 +81,61 @@
 			<path>pservicebus\runtime\serializers\XmlSerializer.java</path>
 			<source>true</source>
 			<index>3</index>
-			<active>true</active>
+			<active>false</active>
+		</docitem>
+		<docitem>
+			<path>pservicebus\runtime\ReflectionHelper.java</path>
+			<source>true</source>
+			<index>4</index>
+			<active>false</active>
+		</docitem>
+		<docitem>
+			<path>pservicebus\runtime\messages\MessageHandlerBase.java</path>
+			<source>true</source>
+			<index>5</index>
+			<active>false</active>
+		</docitem>
+		<docitem>
+			<path>pservicebus\runtime\messages\MessageProcessor.java</path>
+			<source>true</source>
+			<index>6</index>
+			<active>false</active>
+		</docitem>
+		<docitem>
+			<path>pservicebus\ESB.java</path>
+			<source>true</source>
+			<index>7</index>
+			<active>false</active>
+		</docitem>
+		<docitem>
+			<path>pservicebus\transports\RabbitMQTransport.java</path>
+			<source>true</source>
+			<index>8</index>
+			<active>false</active>
+		</docitem>
+		<docitem>
+			<path>test\TDataInfo.java</path>
+			<source>true</source>
+			<index>9</index>
+			<active>false</active>
+		</docitem>
+		<docitem>
+			<path>test\TData.java</path>
+			<source>true</source>
+			<index>10</index>
+			<active>false</active>
+		</docitem>
+		<docitem>
+			<path>pservicebus\runtime\TransportHelper.java</path>
+			<source>true</source>
+			<index>11</index>
+			<active>false</active>
+		</docitem>
+		<docitem>
+			<path>pservicebus\runtime\TransportType.java</path>
+			<source>true</source>
+			<index>12</index>
+			<active>false</active>
 		</docitem>
 	</open_files>
 </workspace_user>

@@ -1,5 +1,11 @@
 package pservicebus;
 
+
+import java.util.*;
+import java.io.*;
+import pservicebus.*;
+import pservicebus.exceptions.*;
+import pservicebus.runtime.*;
 import pservicebus.extensions.*;
 
 public class ESB {
@@ -7,7 +13,6 @@ public class ESB {
 	private static String _password;
 	private static Boolean _throwException;
 	private static String _endpointAddress;
-	private static Topics _topics;
 
 	static{
 		_endpointAddress = "http://localhost:8087/ESBRestService";
@@ -36,7 +41,7 @@ public class ESB {
 		_throwException = reThrowException;
 	}
 
-	public static void configWithAddress(String address){
+	public static void connect(String address){
 		_endpointAddress = address;
 	}
 
@@ -45,8 +50,15 @@ public class ESB {
 		_password = password;
 	}
 
-	public static Topics getTopics(){
-		if(_topics == null) _topics = new Topics();
-		return _topics;
+	@SuppressWarnings("unchecked")
+	public static List<Topic> getTopics() throws ESBException, TopicNotRegisteredException, IOException{
+		List<Topic> topics = new ArrayList<Topic>();
+		String json = RestHelper.invoke("GetTopics", null);
+		List<Map<String, Object>> data = RestHelper.<List<Map<String, Object>>>fromJson(json);
+		if(data != null){
+			for(Map<String, Object> topicDict : data)
+				topics.add(Topic.dictionaryToTopic(topicDict));
+		}else throw new ESBException(json);
+		return topics;
 	}
 }
