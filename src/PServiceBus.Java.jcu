@@ -69,7 +69,7 @@
 			<path>test\TestESB.java</path>
 			<source>true</source>
 			<index>1</index>
-			<active>true</active>
+			<active>false</active>
 		</docitem>
 		<docitem>
 			<path>pservicebus\runtime\transformations\TextTransformation.java</path>
@@ -135,6 +135,42 @@
 			<path>pservicebus\runtime\TransportType.java</path>
 			<source>true</source>
 			<index>12</index>
+			<active>false</active>
+		</docitem>
+		<docitem>
+			<path>pservicebus\transports\RedisTransport.java</path>
+			<source>true</source>
+			<index>13</index>
+			<active>true</active>
+		</docitem>
+		<docitem>
+			<path>pservicebus\transports\WebServiceTransport.java</path>
+			<source>true</source>
+			<index>14</index>
+			<active>false</active>
+		</docitem>
+		<docitem>
+			<path>pservicebus\transports\BasicHttpTransport.java</path>
+			<source>true</source>
+			<index>15</index>
+			<active>false</active>
+		</docitem>
+		<docitem>
+			<path>pservicebus\transports\EmailTransport.java</path>
+			<source>true</source>
+			<index>16</index>
+			<active>false</active>
+		</docitem>
+		<docitem>
+			<path>pservicebus\transports\HttpTransport.java</path>
+			<source>true</source>
+			<index>17</index>
+			<active>false</active>
+		</docitem>
+		<docitem>
+			<path>pservicebus\transports\MSSQLTransport.java</path>
+			<source>true</source>
+			<index>18</index>
 			<active>false</active>
 		</docitem>
 	</open_files>
