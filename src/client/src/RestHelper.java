@@ -6,7 +6,7 @@ import flexjson.*;
 
 
 public final class RestHelper {
-	public final static JSONSerializer _serializer = new JSONSerializer();
+	    private final static JSONSerializer _serializer = new JSONSerializer();
 
 		public static <T> T fromJson(String json){
 			return new JSONDeserializer<T>().deserialize(json);
@@ -34,11 +34,12 @@ public final class RestHelper {
 		}
 
 		
-		public static String invoke(String methodName, Map<String, Object> value) throws IOException, UnsupportedEncodingException {
-			String result;
+		public static String invoke(String methodName, Map<String, Object> value) {
+			String result = StringExtension.empty;
 			String address = String.format("%s/%s?ReThrowException=%s&ESBUserName=%s&ESBPassword=%s",
 				PSBClient.getEndpoint(), methodName,
 				PSBClient.getThrowException(), PSBClient.getApikey(), PSBClient.getPasscode());
+			try{
 			StringBuilder sb = new StringBuilder();
 			if(value != null){
 				for(Map.Entry<String, Object> entry : value.entrySet()){
@@ -73,6 +74,9 @@ public final class RestHelper {
 				result.substring(1, Math.max(result.length() - 1, 0)).replaceAll("\\\\\"","\"") : result;
 			
 			connection.disconnect();	
+			}
+			catch(UnsupportedEncodingException ex){}
+			catch(IOException ex){}
 			return result;
 		}
 }

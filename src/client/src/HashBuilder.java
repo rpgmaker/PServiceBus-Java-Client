@@ -13,4 +13,8 @@ class HashBuilder {
 	public Map<String, Object> getHash(){
 		return _map;
 	}
+	
+	public String toJSON(){
+		return RestHelper.toJson(_map);
+	}
 }
