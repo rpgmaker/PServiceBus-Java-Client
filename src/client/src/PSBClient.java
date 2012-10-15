@@ -249,6 +249,10 @@ public final class PSBClient {
 		PSBClient.<T>publish(message, groupID, sequenceID, 0);
 	}
 	
+	public static <T> void publish(T message){
+		PSBClient.<T>publish(message, null, 0);
+	}
+	
 	private static void disconnect(){
 		String username = getUserName();
 		cleanUp();
