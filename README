@@ -1,7 +1,7 @@
 ---------------------------------------------------------------------
 Sample Usage
 ---------------------------------------------------------------------
-```java
+
 public class ChatTopic {
 	public String UserName, Message;
 	public ChatTopic(){}
@@ -10,13 +10,11 @@ public class ChatTopic {
 		Message = message;
 	}
 }
-```
 
 
 ----------------------------------------------------------------------
 Console application code
 ----------------------------------------------------------------------
-```java
 //Register
 PSBClient.register(ChatTopic.class);
 
@@ -29,4 +27,3 @@ PSBClient.subscribe(ChatTopic.class, new Action<ChatTopic>(){
 
 //Publish
 PSBClient.publish(new ChatTopic("JavaUser", "Hello from Java"));
-```
