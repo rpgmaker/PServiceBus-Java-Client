@@ -2,15 +2,8 @@
 Sample Usage
 ---------------------------------------------------------------------
 
-import java.util.*;
-
-import pservicebus.runtime.*;
-import pservicebus.annotations.*;
-
 public class ChatTopic {
 	public String UserName, Message;
-	@TopicHeader
-	public Map<String, String> Headers;
 	public ChatTopic(){}
 	public ChatTopic(String userName, String message){
 		UserName = userName;
@@ -23,46 +16,11 @@ public class ChatTopic {
 Console application code
 ----------------------------------------------------------------------
 
-//Register ChatTopic
-		Topic.register(ChatTopic.class);
+        //Register ChatTopic
+		PSBClient.register(ChatTopic.class);
 
-		//Subscribe "Olamide" to ChatTopic with TcpTransport using a filter on the UserName not equal to "Olamide"
-		String userName = "JavaTcpUser";
-		Subscriber subscriber = Subscriber.select(userName);
-		if(subscriber.getState() == ObjectState.InValid){
-			Subscriber.create(userName)
-				.subscribeTo(Topic.select(ChatTopic.class).notEqual("UserName", userName))
-				.addTransport("Tcp", new TcpTransport(), "ChatTopic")
-				.save();
-		}
-		subscriber = Subscriber.select(userName);
-
-		subscriber.onMessageReceived(ChatTopic.class, "Tcp", new ESBMessageAction<ChatTopic>(){
-			public void handle(ChatTopic chatTopic){
-				if(chatTopic.Headers != null){
-					for(Map.Entry<String, String> entry : chatTopic.Headers.entrySet())
-						System.out.println(String.format("%s: %s", entry.getKey(), entry.getValue()));
-				}
-				System.out.println(String.format("%s: %s",chatTopic.UserName, chatTopic.Message));
+		PSBClient.subscribe(ChatTopic.class, new Action<ChatTopic>(){
+			public execute(ChatTopic msg){
+				System.out.println(String.format("%s: %s",msg.UserName, msg.Message));
 			}
-		},
-			new ESBMessageAction<Exception>(){
-				public void handle(Exception ex){
-					ExceptionHelper.printStackTrace(ex);
-				}
-			}
-		);
-
-		Scanner in = new Scanner(System.in);
-
-		String text = null;
-
-		System.out.println("Waiting for messages....");
-
-		while( !in.nextLine().equals("exit") );
-
-		TransportHandlers.shutdown();
-
-		subscriber.delete();
-
-		in.close();
+		});
