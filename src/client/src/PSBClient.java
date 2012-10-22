@@ -7,7 +7,7 @@ public final class PSBClient {
 
 	private static final String USERNAME_KEY = "pservicebus_username_info",
        ESBTOPIC_HEADERS = "ESBTOPIC_HEADERS",
-       STREAM_URL = "StreamSubscriberMessages/?subscriberName={0}&transportName={1}&messageTypeInfo={2}&batchSize={3}&interval={4}&transport=httpstreaming";
+       STREAM_URL = "StreamSubscriberMessages/?subscriberName={0}&transportName={1}&batchSize={2}&interval={3}&transport=httpstreaming";
 	private static String endpoint, apikey, passcode, address, username;
 	private static Boolean throwException, durable;
 	private static TransportType transport;
@@ -31,14 +31,18 @@ public final class PSBClient {
 	
 	private static void registerTopic(String name, String description, HashMap<String, String> contract){
 		if(name == null) throw new NullPointerException("name");
-		RestHelper.invoke("RegisterTopic", HashBuilder.create()
-			.add("topicData", 
-				HashBuilder.create()
-					.add("TopicName", name)
-					.add("TopicDescription", description != null ? description : name)
-					.add("ContractDict", contract != null ? contract : new HashMap<String, String>())
-					.toJSON())
-			.getHash());
+		Map<String, Object> topic = RestHelper.fromJsonToMap(RestHelper.invoke("SelectTopic", 
+				HashBuilder.create().add("name", name).getHash()));
+		if(!Boolean.parseBoolean(topic.get("IsValid").toString())){
+			RestHelper.invoke("RegisterTopic", HashBuilder.create()
+				.add("topicData", 
+					HashBuilder.create()
+						.add("TopicName", name)
+						.add("TopicDescription", description != null ? description : name)
+						.add("ContractDict", contract != null ? contract : new HashMap<String, String>())
+						.toJSON())
+				.getHash());
+		}
 	}
 	
 	public static void unRegister(String name){
@@ -141,6 +145,8 @@ public final class PSBClient {
 		}
 		final Field headerField = hField;
 		final Boolean needHeader = headerField != null;
+		//Register topic if not exists
+		register(topicName);
 		Map<String, Object> subscriber = 
 			RestHelper.fromJsonToMap(RestHelper.invoke("SelectSubscriber",
 			HashBuilder.create().add("name", username).getHash()));
@@ -154,22 +160,18 @@ public final class PSBClient {
 		if(!topics.containsKey(topicName)) 
 			subscribeToTopic(username, topicName, filter, needHeader);
 		if(callback == null) return;
-		try {
-			handler = new HttpStreaming(
-				StringExtension.format(STREAM_URL,
-				 username, topicName, 
-				 RestHelper.toJson(type.newInstance()).replace("null", "\"\""), batchSize,
-				 interval));
-			handlers.put(topicName, handler);
-			handler.setOnReceived(new Action<String>(){
-				public void execute(String data){
-					if(needHeader) 
-						data = data.replace(ESBTOPIC_HEADERS, headerField.getName());
-					callback.execute(RestHelper.<T>fromJson(data));
-				}
-			});
-		} catch (InstantiationException e) {} 
-		catch (IllegalAccessException e) {}
+		handler = new HttpStreaming(
+			StringExtension.format(STREAM_URL,
+				username, topicName, batchSize,
+				interval));
+		handlers.put(topicName, handler);
+		handler.setOnReceived(new Action<String>(){
+			public void execute(String data){
+				if(needHeader) 
+					data = data.replace(ESBTOPIC_HEADERS, headerField.getName());
+				callback.execute(RestHelper.<T>fromJson(data));
+			}
+		});	
 	}
 	
 	public static <T> void subscribe(Class<T> type, Action<T> callback, String filter, long interval){
@@ -212,6 +214,8 @@ public final class PSBClient {
 			headers.put("ESB_GROUP_ID", groupID);
 			headers.put("ESB_SEQUENCE_ID", String.valueOf(sequenceID));
 		}
+		//Register topic if not exists
+		register(topicName);
 		RestHelper.invoke("PublishTopic", 
 			HashBuilder.create()
 				.add("topicName", topicName)
