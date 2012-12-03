@@ -7,7 +7,7 @@ public final class PSBClient {
 
 	private static final String USERNAME_KEY = "pservicebus_username_info",
        ESBTOPIC_HEADERS = "ESBTOPIC_HEADERS",
-       STREAM_URL = "StreamSubscriberMessages/?subscriberName={0}&transportName={1}&batchSize={2}&interval={3}&transport=httpstreaming";
+       STREAM_URL = "StreamSubscriberMessages/?subscriberName={0}&transportName={1}&batchSize={2}&interval={3}&ConnectionID={4}&transport=httpstreaming";
 	private static String endpoint, apikey, passcode, address, username;
 	private static Boolean throwException, durable;
 	private static TransportType transport;
@@ -109,13 +109,14 @@ public final class PSBClient {
 		}
 	}
 	
-	private static void subscribeToTopic(String username, String topicName, String filter, Boolean needHeader){
+	private static void subscribeToTopic(String username, String topicName, String filter, Boolean needHeader, Boolean caseSensitive){
 		RestHelper.invoke("SubscribeTo",
 			HashBuilder.create()
 				.add("subscriber", username)
 				.add("topicName", topicName)
 				.add("filter", filter)
 				.add("needHeader", needHeader)
+				.add("caseSensitive", caseSensitive)
 				.getHash());
 		RestHelper.invoke("AddTransport",
 				HashBuilder.create()
@@ -128,7 +129,7 @@ public final class PSBClient {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <T> void subscribe(Class<T> type, final Action<T> callback, String filter, long interval, int batchSize){
+	public static <T> void subscribe(Class<T> type, final Action<T> callback, String filter, long interval, int batchSize, Boolean caseSensitive){
 		filter = filter == null ? StringExtension.empty : filter;
 		interval = interval <= 0 ? 5 : interval;
 		batchSize = batchSize <= 0 ? 1 : batchSize;
@@ -158,12 +159,12 @@ public final class PSBClient {
 				HashBuilder.create()
 					.add("subscriber", username).getHash());
 		if(!topics.containsKey(topicName)) 
-			subscribeToTopic(username, topicName, filter, needHeader);
+			subscribeToTopic(username, topicName, filter, needHeader, caseSensitive);
 		if(callback == null) return;
 		handler = new HttpStreaming(
 			StringExtension.format(STREAM_URL,
 				username, topicName, batchSize,
-				interval));
+				interval, username));
 		handlers.put(topicName, handler);
 		handler.setOnReceived(new Action<String>(){
 			public void execute(String data){
@@ -172,6 +173,10 @@ public final class PSBClient {
 				callback.execute(RestHelper.<T>fromJson(data));
 			}
 		});	
+	}
+	
+	public static <T> void subscribe(Class<T> type, Action<T> callback, String filter, long interval, int batchSize){
+		PSBClient.<T>subscribe(type, callback, filter, interval, batchSize, true);
 	}
 	
 	public static <T> void subscribe(Class<T> type, Action<T> callback, String filter, long interval){
@@ -269,7 +274,7 @@ public final class PSBClient {
 				.add("subscriberName", username).getHash());		
 	}
 	
-	private static String getUserName(){
+	protected final static String getUserName(){
 		if(!StringExtension.isNullOrEmpty(username)) return username;
 		username = storage.get(USERNAME_KEY);
 		if(username != null) durable = true;

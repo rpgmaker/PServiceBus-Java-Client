@@ -36,9 +36,9 @@ public final class RestHelper {
 		
 		public static String invoke(String methodName, Map<String, Object> value) {
 			String result = StringExtension.empty;
-			String address = String.format("%s/%s?ReThrowException=%s&ESBUserName=%s&ESBPassword=%s",
+			String address = String.format("%s/%s?ReThrowException=%s&ESBUserName=%s&ESBPassword=%s&ConnectionID=%s",
 				PSBClient.getEndpoint(), methodName,
-				PSBClient.getThrowException(), PSBClient.getApikey(), PSBClient.getPasscode());
+				PSBClient.getThrowException(), PSBClient.getApikey(), PSBClient.getPasscode(), PSBClient.getUserName());
 			try{
 			StringBuilder sb = new StringBuilder();
 			if(value != null){
