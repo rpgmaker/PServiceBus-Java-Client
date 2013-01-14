@@ -17,7 +17,7 @@ public final class PSBClient {
 	
 	static {
 		endpoint = "http://localhost:8087/ESBRestService/";
-		address = "localhost:5672;userID=guest;password=guest";
+		address = "endpoint://guest:guest@localhost:5672/";
 		transport = TransportType.RabbitMQ;
 		handlers = new HashMap<String, HttpStreaming>();
 		storage = LocalStorage.getInstance();
