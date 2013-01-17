@@ -14,12 +14,14 @@ public final class PSBClient {
 	private static ILocalStorage storage;
 	private static Action<Object> onDisconnect;
 	private static HashMap<String, HttpStreaming> handlers;
+	private static HashMap<String, String> topics;
 	
 	static {
 		endpoint = "http://localhost:8087/ESBRestService/";
 		address = "endpoint://guest:guest@localhost:5672/";
 		transport = TransportType.RabbitMQ;
 		handlers = new HashMap<String, HttpStreaming>();
+		topics = new HashMap<String, String>();
 		storage = LocalStorage.getInstance();
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable(){
 			@Override
@@ -31,18 +33,16 @@ public final class PSBClient {
 	
 	private static void registerTopic(String name, String description, HashMap<String, String> contract){
 		if(name == null) throw new NullPointerException("name");
-		Map<String, Object> topic = RestHelper.fromJsonToMap(RestHelper.invoke("SelectTopic", 
-				HashBuilder.create().add("name", name).getHash()));
-		if(!Boolean.parseBoolean(topic.get("IsValid").toString())){
-			RestHelper.invoke("RegisterTopic", HashBuilder.create()
-				.add("topicData", 
-					HashBuilder.create()
-						.add("TopicName", name)
-						.add("TopicDescription", description != null ? description : name)
-						.add("ContractDict", contract != null ? contract : new HashMap<String, String>())
-						.toJSON())
-				.getHash());
-		}
+		if(topics.containsKey(name)) return;
+		RestHelper.invoke("RegisterTopic", HashBuilder.create()
+			.add("topicData", 
+				HashBuilder.create()
+					.add("TopicName", name)
+					.add("TopicDescription", description != null ? description : name)
+					.add("ContractDict", contract != null ? contract : new HashMap<String, String>())
+					.toJSON())
+		.getHash());
+		topics.put(name, name);
 	}
 	
 	public static void unRegister(String name){
@@ -82,9 +82,7 @@ public final class PSBClient {
 	}
 	
 	private static String parseAddress(String topicName){
-		if(transport == TransportType.MSMQ)
-			return StringExtension.join(StringExtension.empty, new String[]{address, topicName, getUserName()});
-		return StringExtension.join(StringExtension.empty, new String[]{address, ";queue=", topicName, getUserName()});
+		return StringExtension.join(StringExtension.empty, new String[]{address, topicName, getUserName()});
 	}
 	
 	private static Map<String, Object> getTransportData(String topicName){
@@ -110,26 +108,22 @@ public final class PSBClient {
 	}
 	
 	private static void subscribeToTopic(String username, String topicName, String filter, Boolean needHeader, Boolean caseSensitive){
-		RestHelper.invoke("SubscribeTo",
-			HashBuilder.create()
-				.add("subscriber", username)
-				.add("topicName", topicName)
-				.add("filter", filter)
-				.add("needHeader", needHeader)
-				.add("caseSensitive", caseSensitive)
-				.getHash());
-		RestHelper.invoke("AddTransport",
+		RestHelper.invoke("Subscribe",
 				HashBuilder.create()
 					.add("subscriber", username)
 					.add("transportName", topicName)
 					.add("topicName", topicName)
 					.add("transportType", transport.getCode())
+					.add("filter", filter)
+					.add("needHeader", needHeader)
+					.add("caseSensitive", caseSensitive)
 					.add("transportData", RestHelper.toJson(getTransportData(topicName)))
 					.getHash());
 	}
 	
 	@SuppressWarnings("unchecked")
 	public static <T> void subscribe(Class<T> type, final Action<T> callback, String filter, long interval, int batchSize, Boolean caseSensitive){
+		if(callback == null) throw new NullPointerException("name");
 		filter = filter == null ? StringExtension.empty : filter;
 		interval = interval <= 0 ? 5 : interval;
 		batchSize = batchSize <= 0 ? 1 : batchSize;
@@ -148,19 +142,8 @@ public final class PSBClient {
 		final Boolean needHeader = headerField != null;
 		//Register topic if not exists
 		register(topicName);
-		Map<String, Object> subscriber = 
-			RestHelper.fromJsonToMap(RestHelper.invoke("SelectSubscriber",
-			HashBuilder.create().add("name", username).getHash()));
-		Boolean isValid = (Boolean)subscriber.get("IsValid");
-		Map<String, Object> topics = (Map<String, Object>)subscriber.get("Topics");
-		HttpStreaming handler = null;
-		if(!isValid)
-			RestHelper.invoke("CreateSubscriber", 
-				HashBuilder.create()
-					.add("subscriber", username).getHash());
-		if(!topics.containsKey(topicName)) 
-			subscribeToTopic(username, topicName, filter, needHeader, caseSensitive);
-		if(callback == null) return;
+		HttpStreaming handler = null; 
+		subscribeToTopic(username, topicName, filter, needHeader, caseSensitive);
 		handler = new HttpStreaming(
 			StringExtension.format(STREAM_URL,
 				username, topicName, batchSize,
@@ -193,14 +176,10 @@ public final class PSBClient {
 	
 	public static void unSubscribe(String topicName){
 		if(topicName == null) throw new NullPointerException("topicName");
-		RestHelper.invoke("UnSubscribeFrom", 
+		RestHelper.invoke("UnSubscribe", 
 				HashBuilder.create()
 					.add("subscriber", getUserName())
 					.add("topicName", topicName).getHash());
-		RestHelper.invoke("DeleteTransport", 
-				HashBuilder.create()
-					.add("subscriber", getUserName())
-					.add("transportNme", topicName).getHash());
 		if(handlers.containsKey(topicName)){
 			handlers.get(topicName).stop();
 			handlers.remove(topicName);
