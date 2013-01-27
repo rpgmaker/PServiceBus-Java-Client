@@ -7,7 +7,7 @@ public class PSBContext {
 	
 	private static Object context;
 	private static ClassLoader classLoader =
-			LocalStorage.class.getClassLoader();
+			PSBContext.class.getClassLoader();
 	
 	public static void setContext(Object context){
 		PSBContext.context = context;

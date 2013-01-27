@@ -2,9 +2,6 @@ package pservicebus.androidchat;
 
 
 
-
-import psb.ILocalStorage;
-import psb.LocalStorage;
 import psb.PSBClient;
 import psb.PSBContext;
 import pservicebus.androidchat.R;

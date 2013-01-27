@@ -10,9 +10,20 @@ class AndroidLocalStorage implements ILocalStorage {
 	private static Method putStringMethod, getStringMethod,
 		removeKeyMethod, applyMethod;
 	
-	static {
+	private static Class<?> getContextClass(){
 		try {
-		    context = PSBContext.getContext();
+			return AndroidLocalStorage.class.getClassLoader().loadClass("android.content.Context");
+		} catch (ClassNotFoundException e) {}
+		return null;
+	}
+	
+	static {
+		context = PSBContext.getContext();
+		if(context == null)
+			throw new NullPointerException("Must call PSBContext.setContext(android.content.Context) for android application");
+		if(context.getClass() != getContextClass()) 
+			throw new RuntimeException("PSBContext.context must be an instance of android.content.Context"); 
+		try {
 		    preferences = ReflectionHelper.getMethod(context.getClass(),
 		    		"getSharedPreferences").invoke(context,
 		    				"PServiceBus_Settings", 0);
