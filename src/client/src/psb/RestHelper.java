@@ -17,16 +17,9 @@ public final class RestHelper {
 			return (T)gson.fromJson(json, type);
 		}
 	    
-		@SuppressWarnings("rawtypes")
 		public static String toJson(Object value){
 			if(value == null) return "null";
-			Class type = value.getClass();
-			if(type == String.class || type.isPrimitive() ||
-				type == Integer.class ||
-				type == Double.class || type == Float.class ||
-				type == Long.class || type == Short.class)
-				return value.toString();
-			return gson.toJson(value);//serializer.transform(new IterableTransformer(), Object[].class).exclude("*.class").serialize(value);
+			return gson.toJson(value);
 		}
 		
 		public static void invoke(final String methodName, final Map<String, Object> value){
@@ -34,7 +27,7 @@ public final class RestHelper {
 		}
 		
 		public static void invoke(String methodName, Map<String, Object> value, Action<String> callback){
-			if(LocalStorage.getIsAndroid()){
+			if(PSBContext.getIsAndroid()){
 				threadPool.execute(new RestHandler(methodName, value, callback));
 			}else{
 				String result = postRequest(methodName, value);

@@ -196,7 +196,7 @@ public final class PSBClient {
 					public void execute(String data){
 						if(needHeader) 
 							data = data.replace(ESBTOPIC_HEADERS, headerField.getName());
-						callback.execute(RestHelper.<T>fromJson(data, messageType));
+						PSBContext.invoke(data, messageType, callback);
 					}
 				});	
 			}

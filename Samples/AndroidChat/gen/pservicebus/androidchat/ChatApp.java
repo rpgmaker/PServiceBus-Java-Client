@@ -1,11 +1,18 @@
 package pservicebus.androidchat;
 
+
+
+
+import psb.ILocalStorage;
 import psb.LocalStorage;
 import psb.PSBClient;
+import psb.PSBContext;
+import pservicebus.androidchat.R;
 import pservicebus.androidchat.util.SystemUiHider;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -119,8 +126,11 @@ public class ChatApp extends Activity {
 		findViewById(R.id.dummy_button).setOnTouchListener(
 				mDelayHideTouchListener);
 		
-		LocalStorage.setContext(this.getApplicationContext());
+		Context context = this;
+			
+		PSBContext.setContext(context);
 		PSBClient.setEndpoint("http://10.0.2.2:8087/ESB/");
+		
 		findViewById(R.id.dummy_button).setOnClickListener(new View.OnClickListener(){
 			@Override
 			public void onClick(View view){
