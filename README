@@ -20,7 +20,7 @@ PSBClient.register(ChatTopic.class);
 
 //Subscribe 
 PSBClient.subscribe(ChatTopic.class, new Action<ChatTopic>(){
-	public execute(ChatTopic msg){
+	public void execute(ChatTopic msg){
 		System.out.println(String.format("%s: %s",msg.UserName, msg.Message));
 	}
 });
