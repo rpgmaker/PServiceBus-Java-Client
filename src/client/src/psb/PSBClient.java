@@ -12,6 +12,7 @@ public final class PSBClient {
        STREAM_URL = "Stream/?Subscriber={0}&TransportName={1}&BatchSize={2}&Interval={3}&ConnectionID={4}&transport=httpstreaming";
 	private static String endpoint, apikey, passcode, address, username;
 	private static Boolean throwException = false, durable = false;
+	protected static Boolean disconnected = false;
 	private static TransportType transport;
 	private static ILocalStorage storage;
 	private static Action<Object> onDisconnect;
@@ -188,10 +189,9 @@ public final class PSBClient {
 			public void execute(String _){
 				HttpStreaming handler = null;
 				handler = new HttpStreaming(
-						StringExtension.format(STREAM_URL,
+						StringExtension.format(getEndpoint() + STREAM_URL,
 								username, topicName, bSize,
 								itval, username));
-				PSBClient.handlers.put(topicName, handler);
 				handler.setOnReceived(new Action<String>(){
 					public void execute(String data){
 						if(needHeader) 
@@ -199,6 +199,8 @@ public final class PSBClient {
 						PSBContext.invoke(data, messageType, callback);
 					}
 				});	
+				handler.start();
+				PSBClient.handlers.put(topicName, handler);
 			}
 		});
 		
@@ -295,15 +297,20 @@ public final class PSBClient {
 		PSBClient.<T>publish(message, null, 0);
 	}
 	
-	private static void disconnect(){
+	public static void disconnect(){
+		if(disconnected) return;
 		final String username = getUserName();
-		cleanUp();
 		Action<String> action = new Action<String>(){
 			@Override
 			public void execute(String _){
 				RestHelper.invoke("Disconnect", 
 						HashBuilder.create()
-						.add("name", username).getHash());
+						.add("name", username).getHash(),
+						new Action<String>(){
+							public void execute(String _){
+								cleanUp();
+							}
+						});
 			}
 		};
 		if(!durable)
@@ -334,6 +341,7 @@ public final class PSBClient {
 		}
 		handlers.clear();
 		if(onDisconnect != null) onDisconnect.execute("Disconnecting");
+		disconnected = true;
 	}
 
 	public static String getEndpoint() {

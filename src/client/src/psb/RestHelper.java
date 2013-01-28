@@ -37,6 +37,9 @@ public final class RestHelper {
 		}
 		
 		public static String postRequest(String methodName, Map<String, Object> value) {
+			if(methodName != "Disconnect")
+				PSBClient.disconnected = false;
+			
 			String result = StringExtension.empty;
 			String address = String.format("%s%s?ReThrowException=%s&ESBUserName=%s&ESBPassword=%s&ConnectionID=%s",
 				PSBClient.getEndpoint(), methodName,

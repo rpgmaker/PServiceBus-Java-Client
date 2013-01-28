@@ -1,4 +1,4 @@
-package pservicebus;
+
 
 import java.util.Scanner;
 
@@ -15,7 +15,14 @@ public class ChatConsole {
 
 		String text = null;
 
+		PSBClient.subscribe(ChatTopic.class, new Action<ChatTopic>(){
+			public void execute(ChatTopic msg){
+				System.out.println(String.format("%s: %s",msg.UserName, msg.Message));
+			}
+		});
+		
 		System.out.println("Waiting for messages....");
+		PSBClient.publish(ChatTopic.New("Java", "add-user"));
 
 		while( !(text = in.nextLine()).equals("exit") ){
 			PSBClient.publish(ChatTopic.New("Java", text));

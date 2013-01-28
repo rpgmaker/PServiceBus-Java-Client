@@ -12,8 +12,8 @@ import java.util.concurrent.Executors;
 public final class HttpStreaming {
 
 	private Action<String> onReceived;
-	private final static ExecutorService threadPool = 
-    		Executors.newCachedThreadPool();
+	private final ExecutorService threadPool = 
+    		Executors.newSingleThreadExecutor(new StreamThreadFactory());
 	private BufferedReader bf;
 	private InputStream in;
 	private volatile Boolean running = false;
@@ -21,7 +21,6 @@ public final class HttpStreaming {
 	
 	public HttpStreaming(String url){
 		this.url = url;
-				
 	}
 	
 	private void setup(){
@@ -30,7 +29,8 @@ public final class HttpStreaming {
 		} catch (MalformedURLException e) {} 
 		catch (IOException e) {}
 		if(in == null)
-			throw new RuntimeException("Could not connect to url");
+			throw new RuntimeException("Could not connect to url: " +
+					url);
 		bf = new BufferedReader(new InputStreamReader(in));
 	}
 	
@@ -38,16 +38,10 @@ public final class HttpStreaming {
 		if(running)
 			throw new RuntimeException("Streaming is already in progress");
 		running = true;
-		setup();
-		threadPool.submit(new Runnable() {			
+		threadPool.execute(new Runnable() {			
 			@Override
 			public void run() {
-				checkIfAvailable();
-			}
-		});
-		threadPool.submit(new Runnable() {			
-			@Override
-			public void run() {
+				setup();
 				poll();
 			}
 		});
@@ -55,7 +49,13 @@ public final class HttpStreaming {
 	
 	public void stop(){
 		running = false;
-		try { bf.close(); } catch (IOException e) {}
+		try {
+			bf.close();
+		} 
+		catch (IOException e) {}
+		finally{
+			threadPool.shutdown();
+		}
 	}
 	
 	private int read(){
@@ -67,39 +67,18 @@ public final class HttpStreaming {
 	
 	public void poll() {
 		StringBuffer reader = new StringBuffer();
-		int eNum = 0, bNum = 7, cChar1 = 0;
-		while(true){			
-			if((cChar1 = read()) == -1){
-				pulse();
-				continue;
+		int end = 0, begin = 7, read = 0;
+		while(running){			
+			if((read = read()) == -1){
+				break;
 			}
-			reader.append((char)cChar1);						
-			if((eNum = reader.indexOf("</comet>")) != -1){	
+			reader.append((char)read);						
+			if((end = reader.indexOf("</comet>")) != -1){	
 				if(onReceived != null)
-					onReceived.execute(reader.substring(bNum, eNum));
+					onReceived.execute(reader.substring(begin, end));
 				reader.delete(0, reader.length());				
 			}
 		}
-	}
-	
-	private void pulse(){
-		notifyAll();
-		try { wait(); } catch (InterruptedException e) {}
-	}
-	
-	private Boolean hasData(){
-		try {
-			return in.available() > 0;
-		} catch (IOException e) {}
-		return false;
-	}
-	
-	private void checkIfAvailable() {
-		while(running) {
-			if(hasData()){
-				pulse();
-			}
-		}		
 	}
 	
 	public void setOnReceived(Action<String> action){

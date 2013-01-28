@@ -1,4 +1,4 @@
-package pservicebus;
+
 
 public class ChatTopic {
 	public String UserName, Message;
