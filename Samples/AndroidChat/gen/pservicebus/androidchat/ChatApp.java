@@ -2,6 +2,7 @@ package pservicebus.androidchat;
 
 
 
+import psb.Action;
 import psb.PSBClient;
 import psb.PSBContext;
 import pservicebus.androidchat.R;
@@ -15,6 +16,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -122,11 +124,19 @@ public class ChatApp extends Activity {
 		// while interacting with the UI.
 		findViewById(R.id.dummy_button).setOnTouchListener(
 				mDelayHideTouchListener);
-		
-		Context context = this;
-			
+
+		final Context context = this;
+
 		PSBContext.setContext(context);
 		PSBClient.setEndpoint("http://10.0.2.2:8087/ESB/");
+
+		
+		PSBClient.subscribe(ChatTopic.class, new Action<ChatTopic>(){
+			public void execute(ChatTopic msg){
+				String message = String.format("%s: %s",msg.UserName, msg.Message);
+		 		Toast.makeText(context,message,Toast.LENGTH_SHORT).show();
+			}
+		});
 		
 		findViewById(R.id.dummy_button).setOnClickListener(new View.OnClickListener(){
 			@Override
