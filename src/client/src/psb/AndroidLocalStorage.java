@@ -21,7 +21,7 @@ class AndroidLocalStorage implements ILocalStorage {
 		context = PSBContext.getContext();
 		if(context == null)
 			throw new NullPointerException("Must call PSBContext.setContext(android.content.Context) for android application");
-		if(context.getClass() != getContextClass()) 
+		if(!getContextClass().isAssignableFrom(context.getClass()))
 			throw new RuntimeException("PSBContext.context must be an instance of android.content.Context"); 
 		try {
 		    preferences = ReflectionHelper.getMethod(context.getClass(),

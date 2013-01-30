@@ -14,7 +14,6 @@ public final class PSBClient {
 	private static Boolean throwException = false, durable = false;
 	protected static Boolean disconnected = false;
 	private static TransportType transport;
-	private static ILocalStorage storage;
 	private static Action<Object> onDisconnect;
 	private static HashMap<String, HttpStreaming> handlers;
 	private static HashMap<String, String> topics;
@@ -25,7 +24,6 @@ public final class PSBClient {
 		transport = TransportType.RabbitMQ;
 		handlers = new HashMap<String, HttpStreaming>();
 		topics = new HashMap<String, String>();
-		storage = LocalStorage.getInstance();
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable(){
 			@Override
 			public void run() {
@@ -323,6 +321,7 @@ public final class PSBClient {
 	
 	protected final static String getUserName(){
 		if(!StringExtension.isNullOrEmpty(username)) return username;
+		ILocalStorage storage = LocalStorage.getInstance();
 		username = storage.get(USERNAME_KEY);
 		if(username != null) durable = true;
 		

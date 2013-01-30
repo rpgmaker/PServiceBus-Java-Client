@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -25,7 +26,8 @@ public final class HttpStreaming {
 	
 	private void setup(){
 		try {
-			in = new URL(url).openConnection().getInputStream();
+			URLConnection connection = new URL(url).openConnection();
+			in = connection.getInputStream();
 		} catch (MalformedURLException e) {} 
 		catch (IOException e) {}
 		if(in == null)
