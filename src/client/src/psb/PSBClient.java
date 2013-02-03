@@ -52,7 +52,7 @@ public final class PSBClient {
 	}
 	
 	public static void unRegister(Class<?> type){
-		String name = type.getName();
+		String name = type.getSimpleName();
 		unRegister(name);
 	}
 	
@@ -65,7 +65,7 @@ public final class PSBClient {
 	}
 	
 	public static void register(Class<?> type){
-		String name = type.getName();
+		String name = type.getSimpleName();
     	Description typeAnnotation = type.getAnnotation(Description.class);
     	String description = typeAnnotation != null ? typeAnnotation.description() : name;
     	Field[] fields = type.getFields();
@@ -136,7 +136,7 @@ public final class PSBClient {
     }
     
     public static <T> void update(Class<T> type, String filter, Boolean caseSensitive){
-    	String topicName = type.getName();
+    	String topicName = type.getSimpleName();
     	Field[] fields = type.getFields();
 		Field hField = null;
 		for(Field field : fields){
@@ -163,7 +163,7 @@ public final class PSBClient {
 		filter = filter == null ? StringExtension.empty : filter;
 		interval = interval <= 0 ? 5 : interval;
 		batchSize = batchSize <= 0 ? 1 : batchSize;
-		final String topicName = type.getName();
+		final String topicName = type.getSimpleName();
 		Field[] fields = type.getFields();
 		Field hField = null;
 		final String username = getUserName();
@@ -238,7 +238,7 @@ public final class PSBClient {
 	}
 	
 	public static void unSubscribe(Class<?> type){
-		String topicName = type.getName();
+		String topicName = type.getSimpleName();
 		unSubscribe(topicName);
 	}
 	
