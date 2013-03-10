@@ -9,7 +9,7 @@ public final class PSBClient {
 
 	private static final String USERNAME_KEY = "pservicebus_username_info",
        ESBTOPIC_HEADERS = "ESBTOPIC_HEADERS",
-       STREAM_URL = "Stream/?Subscriber={0}&TransportName={1}&BatchSize={2}&Interval={3}&ConnectionID={4}&transport=httpstreaming";
+       STREAM_URL = "Stream/?Subscriber={0}&TransportName={1}&BatchSize={2}&Interval={3}&ConnectionID={4}&transport=httpstreaming&durable={5}";
 	private static String endpoint, apikey, passcode, address, username;
 	private static Boolean throwException = false, durable = false;
 	protected static Boolean disconnected = false;
@@ -189,7 +189,7 @@ public final class PSBClient {
 				handler = new HttpStreaming(
 						StringExtension.format(getEndpoint() + STREAM_URL,
 								username, topicName, bSize,
-								itval, username));
+								itval, username, durable));
 				handler.setOnReceived(new Action<String>(){
 					public void execute(String data){
 						if(needHeader) 
