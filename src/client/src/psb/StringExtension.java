@@ -2,7 +2,7 @@ package psb;
 
 public class StringExtension {
 	public final static String empty = "";
-	public static Boolean isNullOrEmpty(String str){
+	public static boolean isNullOrEmpty(String str){
 		return str == null || str.equals(empty);
 	}
 

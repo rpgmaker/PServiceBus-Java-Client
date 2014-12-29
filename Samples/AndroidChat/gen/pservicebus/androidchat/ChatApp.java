@@ -8,6 +8,7 @@ import psb.PSBContext;
 import pservicebus.androidchat.R;
 import pservicebus.androidchat.util.SystemUiHider;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
@@ -16,7 +17,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Toast;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -25,6 +27,16 @@ import android.widget.Toast;
  * @see SystemUiHider
  */
 public class ChatApp extends Activity {
+	
+	public class WebViewController extends WebViewClient {
+
+	    @Override
+	     public boolean shouldOverrideUrlLoading(WebView view, String url) {
+	         view.loadUrl(url);
+	        return true;
+	      }
+		
+	}
 	/**
 	 * Whether or not the system UI should be auto-hidden after
 	 * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -53,6 +65,7 @@ public class ChatApp extends Activity {
 	 */
 	private SystemUiHider mSystemUiHider;
 
+	@SuppressLint("SetJavaScriptEnabled")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -125,18 +138,24 @@ public class ChatApp extends Activity {
 		findViewById(R.id.dummy_button).setOnTouchListener(
 				mDelayHideTouchListener);
 
-		final Context context = this;
+		//final Context context = this;
 
-		PSBContext.setContext(context);
-		PSBClient.setEndpoint("http://10.0.2.2:8087/ESB/");
-
+		//PSBContext.setContext(context);
+		//PSBClient.setEndpoint("http://10.0.2.2:8087/ESB/");
 		
-		PSBClient.subscribe(ChatTopic.class, new Action<ChatTopic>(){
-			public void execute(ChatTopic msg){
-				String message = String.format("%s: %s",msg.UserName, msg.Message);
-		 		Toast.makeText(context,message,Toast.LENGTH_SHORT).show();
-			}
-		});
+		WebView webView = (WebView) findViewById(R.id.webView1);
+		webView.getSettings().setJavaScriptEnabled(true);
+		webView.setWebViewClient(new WebViewController());
+		
+		webView.loadUrl("http://view.jquerymobile.com/1.3.2/dist/demos/widgets/listviews/");
+		
+		//PSBClient.subscribe(ChatTopic.class, new Action<ChatTopic>(){
+		//	public void execute(ChatTopic msg){
+		//		String message = String.format("%s: %s",msg.UserName, msg.Message);
+		// 		Toast.makeText(context,message,Toast.LENGTH_SHORT).show();
+		//	}
+		//});
+		
 		
 		findViewById(R.id.dummy_button).setOnClickListener(new View.OnClickListener(){
 			@Override

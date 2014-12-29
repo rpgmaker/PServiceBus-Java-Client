@@ -21,6 +21,10 @@ public class PSBContext {
 		if(getIsAndroid()){
 			Method runOnUiMethod = ReflectionHelper.getMethod(context.getClass(), "runOnUiThread");
 			try {
+				if(runOnUiMethod == null){
+					callback.execute(RestHelper.<T>fromJson(data, type));
+					return;
+				}
 				runOnUiMethod.invoke(context, new MessageHandler<T>(data, type, callback));
 			} catch (InvocationTargetException e) {} 
 			catch (SecurityException e) {} 

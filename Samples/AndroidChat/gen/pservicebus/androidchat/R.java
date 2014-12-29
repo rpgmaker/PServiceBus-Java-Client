@@ -29,6 +29,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int editText1=0x7f070003;
         public static final int fullscreen_content=0x7f070000;
         public static final int fullscreen_content_controls=0x7f070001;
+        public static final int webView1=0x7f070004;
     }
     public static final class layout {
         public static final int activity_chat_app=0x7f030000;

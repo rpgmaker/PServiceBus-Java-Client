@@ -1,5 +1,5 @@
 package psb;
-import java.util.*;
+
 
 public enum TransportType {
    MSMQ (0),
@@ -7,13 +7,14 @@ public enum TransportType {
    Tcp (2),
    Redis (6);
 
-   private static final Map<Integer, TransportType> lookup
-		= new HashMap<Integer, TransportType>();
+   private static final java.util.HashMap<Integer, TransportType> lookup
+		= new java.util.HashMap<Integer, TransportType>();
 
 	static{
-		for(TransportType type  : EnumSet.allOf(TransportType.class)){
-			lookup.put(type.getCode(), type);
-		}
+		lookup.put(0, TransportType.MSMQ);
+		lookup.put(1, TransportType.RabbitMQ);
+		lookup.put(2, TransportType.Tcp);
+		lookup.put(6, TransportType.Redis);
 	}
 
 	private int code;

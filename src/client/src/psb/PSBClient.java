@@ -184,7 +184,7 @@ public final class PSBClient {
 		 
 		subscribeToTopic(username, topicName, filter, needHeader, caseSensitive, new Action<String>() {
 			@Override
-			public void execute(String _){
+			public void execute(String __){
 				HttpStreaming handler = null;
 				handler = new HttpStreaming(
 						StringExtension.format(getEndpoint() + STREAM_URL,
@@ -300,12 +300,12 @@ public final class PSBClient {
 		final String username = getUserName();
 		Action<String> action = new Action<String>(){
 			@Override
-			public void execute(String _){
+			public void execute(String __){
 				RestHelper.invoke("Disconnect", 
 						HashBuilder.create()
 						.add("name", username).getHash(),
 						new Action<String>(){
-							public void execute(String _){
+							public void execute(String ___){
 								cleanUp();
 							}
 						});
